@@ -12,31 +12,28 @@ public class AuthController {
     public AuthController(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
-    
-    //Test API
-    @GetMapping("/")
-    public String test() {
-    	return "Auth API Working";
-    }
 
-    // Register
     @PostMapping("/register")
     public String register(@RequestBody User user) {
-        if (userRepository.findByUsername(user.getUsername()) != null) {
+        User existingUser = userRepository.findByUsername(user.getUsername());
+
+        if (existingUser != null) {
             return "User already exists";
         }
+
         userRepository.save(user);
         return "Registered successfully";
     }
 
-    // Login
     @PostMapping("/login")
     public String login(@RequestBody User user) {
         User existingUser = userRepository.findByUsername(user.getUsername());
 
-        if (existingUser != null && existingUser.getPassword().equals(user.getPassword())) {
+        if (existingUser != null &&
+            existingUser.getPassword().equals(user.getPassword())) {
             return "Login successful";
         }
+
         return "Invalid credentials";
     }
 }
