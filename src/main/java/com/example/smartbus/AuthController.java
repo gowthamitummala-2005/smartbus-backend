@@ -15,9 +15,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public String register(@RequestBody User user) {
-        User existingUser = userRepository.findByUsername(user.getUsername());
-
-        if (existingUser != null) {
+        if (userRepository.findByUsername(user.getUsername()) != null) {;
             return "User already exists";
         }
 
