@@ -4,13 +4,19 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin
+@CrossOrigin(origins = "*")
 public class AuthController {
 
     private final UserRepository userRepository;
 
     public AuthController(UserRepository userRepository) {
         this.userRepository = userRepository;
+    }
+    
+    //Test API
+    @GetMapping("/")
+    public String test() {
+    	return "Auth API Working";
     }
 
     // Register
