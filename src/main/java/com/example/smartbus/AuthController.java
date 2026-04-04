@@ -6,7 +6,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "*")
+@CrossOrigin("*")
 public class AuthController {
 
     private final UserRepository userRepository;
@@ -15,37 +15,49 @@ public class AuthController {
         this.userRepository = userRepository;
     }
 
-    @PostMapping("/register")
-    public Map<String, Object> register(@RequestBody User user) {
+    // REGISTER
+    @GetMapping("/register")
+    public Map<String, Object> register(
+            @RequestParam String username,
+            @RequestParam String password) {
+
         Map<String, Object> res = new HashMap<>();
 
-        if (userRepository.findByUsername(user.getUsername()) != null) {
+        if (userRepository.findByUsername(username) != null) {
             res.put("success", false);
             res.put("message", "User already exists");
             return res;
         }
 
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(password);
         userRepository.save(user);
+
         res.put("success", true);
         res.put("message", "Registered successfully");
         return res;
     }
 
-    @PostMapping("/login")
-    public Map<String, Object> login(@RequestBody User user) {
-        Map<String, Object> res = new HashMap<>();
+    // LOGIN
+    @GetMapping("/login")
+    public Map<String, Object> login(
+            @RequestParam String username,
+            @RequestParam String password) {
 
-        User existingUser = userRepository.findByUsername(user.getUsername());
+        Map<String, Object> response = new HashMap<>();
+
+        User existingUser = userRepository.findByUsername(username);
 
         if (existingUser != null &&
-                existingUser.getPassword().equals(user.getPassword())) {
-            res.put("success", true);
-            res.put("message", "Login successful");
+                existingUser.getPassword().equals(password)) {
+            response.put("success", true);
+            response.put("message", "Login successful");
         } else {
-            res.put("success", false);
-            res.put("message", "Invalid credentials");
+            response.put("success", false);
+            response.put("message", "Invalid credentials");
         }
 
-        return res;
+        return response;
     }
 }
