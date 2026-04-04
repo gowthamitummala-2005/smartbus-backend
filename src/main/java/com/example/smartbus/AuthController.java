@@ -1,32 +1,29 @@
 package com.example.smartbus;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin("*")
+@CrossOrigin(origins = "*")
 public class AuthController {
 
-    private final UserRepository userRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-    public AuthController(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
-    // REGISTER
     @GetMapping("/register")
-    public Map<String, Object> register(
-            @RequestParam String username,
-            @RequestParam String password) {
+    public Map<String, Object> register(@RequestParam String username,
+                                        @RequestParam String password) {
 
-        Map<String, Object> res = new HashMap<>();
+        Map<String, Object> response = new HashMap<>();
 
-        if (userRepository.findByUsername(username) != null) {
-            res.put("success", false);
-            res.put("message", "User already exists");
-            return res;
+        User existingUser = userRepository.findByUsername(username);
+
+        if (existingUser != null) {
+            response.put("success", false);
+            response.put("message", "User already exists");
+            return response;
         }
 
         User user = new User();
@@ -34,23 +31,20 @@ public class AuthController {
         user.setPassword(password);
         userRepository.save(user);
 
-        res.put("success", true);
-        res.put("message", "Registered successfully");
-        return res;
+        response.put("success", true);
+        response.put("message", "Registered successfully");
+        return response;
     }
 
-    // LOGIN
     @GetMapping("/login")
-    public Map<String, Object> login(
-            @RequestParam String username,
-            @RequestParam String password) {
+    public Map<String, Object> login(@RequestParam String username,
+                                     @RequestParam String password) {
 
         Map<String, Object> response = new HashMap<>();
 
-        User existingUser = userRepository.findByUsername(username);
+        User user = userRepository.findByUsername(username);
 
-        if (existingUser != null &&
-                existingUser.getPassword().equals(password)) {
+        if (user != null && user.getPassword().equals(password)) {
             response.put("success", true);
             response.put("message", "Login successful");
         } else {
