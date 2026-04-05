@@ -33,6 +33,7 @@ public class AuthController {
 
         response.put("success", true);
         response.put("message", "Registered successfully");
+
         return response;
     }
 
